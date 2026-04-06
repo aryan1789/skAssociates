@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
 import Home from './pages/Home';
 import Services from './pages/Services';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Pricing from './pages/Pricing';
+import Dashboard from './pages/Dashboard';
 import logo from './assets/logo.png';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import AuthModal from './components/AuthModal';
@@ -15,11 +16,67 @@ function Header() {
   const location = useLocation();
   const path = location.pathname;
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const [modal, setModal] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const prevUserRef = React.useRef(user);
 
   // Close mobile menu on route change
   useEffect(() => { setMenuOpen(false); }, [location.pathname]);
+
+  // Redirect to dashboard when user logs in
+  useEffect(() => {
+    if (!prevUserRef.current && user) {
+      navigate('/dashboard');
+    }
+    prevUserRef.current = user;
+  }, [user, navigate]);
+
+  // Redirect to home when user signs out from dashboard
+  useEffect(() => {
+    if (!user && path === '/dashboard') {
+      navigate('/');
+    }
+  }, [user, path, navigate]);
+
+  if (user) {
+    const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture;
+    const displayName =
+      user.user_metadata?.full_name ||
+      user.user_metadata?.name ||
+      user.email;
+    const initials = displayName.trim()[0].toUpperCase();
+
+    return (
+      <header className="header" style={{ position: 'sticky', top: 0, zIndex: 50 }}>
+        <nav className="container header-nav">
+          <Link to="/dashboard" style={{ display: 'flex', alignItems: 'center' }}>
+            <img src={logo} alt="SK & Associates" style={{ height: '3rem' }} />
+          </Link>
+          <div className="nav-actions" style={{ alignItems: 'center' }}>
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt={displayName}
+                style={{ width: '2.25rem', height: '2.25rem', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--outline-variant)' }}
+              />
+            ) : (
+              <div style={{
+                width: '2.25rem', height: '2.25rem', borderRadius: '50%',
+                backgroundColor: 'var(--primary)', color: 'var(--on-primary)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontWeight: 700, fontSize: '0.9375rem', flexShrink: 0,
+                border: '2px solid var(--outline-variant)',
+              }}>
+                {initials}
+              </div>
+            )}
+            <button className="btn btn-secondary" onClick={signOut} style={{ padding: '0.5rem 1.25rem', borderRadius: '0.5rem', fontWeight: 500 }}>Sign Out</button>
+          </div>
+        </nav>
+      </header>
+    );
+  }
 
   return (
     <>
@@ -42,17 +99,8 @@ function Header() {
           {/* Desktop actions */}
           <div className="nav-actions">
             <Link to="/consultation" className="btn btn-primary" style={{ padding: '0.5rem 1.25rem', borderRadius: '0.5rem', fontWeight: 500 }}>Book a Consultation</Link>
-            {user ? (
-              <>
-                <span style={{ fontSize: '0.9375rem', color: 'var(--on-surface-variant)', maxWidth: '12rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.email}</span>
-                <button className="btn btn-secondary" onClick={signOut} style={{ padding: '0.5rem 1.25rem', borderRadius: '0.5rem', fontWeight: 500 }}>Sign Out</button>
-              </>
-            ) : (
-              <>
-                <button className="btn btn-secondary" onClick={() => setModal('signin')} style={{ padding: '0.5rem 1.25rem', borderRadius: '0.5rem', fontWeight: 500 }}>Log In</button>
-                <button className="btn btn-secondary" onClick={() => setModal('register')} style={{ padding: '0.5rem 1.25rem', borderRadius: '0.5rem', fontWeight: 500 }}>Register</button>
-              </>
-            )}
+            <button className="btn btn-secondary" onClick={() => setModal('signin')} style={{ padding: '0.5rem 1.25rem', borderRadius: '0.5rem', fontWeight: 500 }}>Log In</button>
+            <button className="btn btn-secondary" onClick={() => setModal('register')} style={{ padding: '0.5rem 1.25rem', borderRadius: '0.5rem', fontWeight: 500 }}>Register</button>
           </div>
 
           {/* Hamburger */}
@@ -74,14 +122,8 @@ function Header() {
             <Link to="/faq" className={`nav-link ${path === '/faq' ? 'active' : ''}`}>FAQ</Link>
             <div className="mobile-menu-actions">
               <Link to="/consultation" className="btn btn-primary" style={{ borderRadius: '0.5rem', textAlign: 'center' }}>Book a Consultation</Link>
-              {user ? (
-                <button className="btn btn-secondary" onClick={signOut} style={{ borderRadius: '0.5rem' }}>Sign Out</button>
-              ) : (
-                <>
-                  <button className="btn btn-secondary" onClick={() => { setModal('signin'); setMenuOpen(false); }} style={{ borderRadius: '0.5rem' }}>Log In</button>
-                  <button className="btn btn-secondary" onClick={() => { setModal('register'); setMenuOpen(false); }} style={{ borderRadius: '0.5rem' }}>Register</button>
-                </>
-              )}
+              <button className="btn btn-secondary" onClick={() => { setModal('signin'); setMenuOpen(false); }} style={{ borderRadius: '0.5rem' }}>Log In</button>
+              <button className="btn btn-secondary" onClick={() => { setModal('register'); setMenuOpen(false); }} style={{ borderRadius: '0.5rem' }}>Register</button>
             </div>
           </div>
         )}
@@ -92,6 +134,7 @@ function Header() {
 }
 
 function Footer() {
+  const { user } = useAuth();
   return (
     <footer className="bg-primary text-surface" style={{ padding: '4rem 0', background: 'linear-gradient(135deg, var(--primary-container), var(--primary))' }}>
       <div className="container footer-grid">
@@ -103,17 +146,19 @@ function Footer() {
             Friendly, local tax advisory and bookkeeping services tailored for small businesses and families.
           </p>
         </div>
-        <div>
-          <h4 style={{ fontSize: '0.75rem', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '1.5rem' }}>Quick Links</h4>
-          <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '1rem', fontSize: '0.875rem' }}>
-            <li><Link to="/">Home</Link></li>
-            <li><Link to="/services">Services</Link></li>
-            <li><Link to="/pricing">Pricing</Link></li>
-            <li><Link to="/about">About Us</Link></li>
-            <li><Link to="/contact">Contact Us</Link></li>
-            <li><Link to="/faq">FAQ</Link></li>
-          </ul>
-        </div>
+        {!user && (
+          <div>
+            <h4 style={{ fontSize: '0.75rem', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '1.5rem' }}>Quick Links</h4>
+            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '1rem', fontSize: '0.875rem' }}>
+              <li><Link to="/">Home</Link></li>
+              <li><Link to="/services">Services</Link></li>
+              <li><Link to="/pricing">Pricing</Link></li>
+              <li><Link to="/about">About Us</Link></li>
+              <li><Link to="/contact">Contact Us</Link></li>
+              <li><Link to="/faq">FAQ</Link></li>
+            </ul>
+          </div>
+        )}
       </div>
       <div className="container" style={{ marginTop: '2rem', paddingTop: '2rem', borderTop: '1px solid rgba(221, 227, 231, 0.1)', textAlign: 'center', fontSize: '0.75rem', opacity: 0.5 }}>
         © 2026 SK & Associates. All rights reserved.
@@ -199,6 +244,7 @@ function AnimatedRoutes() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/consultation" element={<Consultation />} />
         <Route path="/faq" element={<FAQ />} />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
     </div>
   );

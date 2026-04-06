@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 export default function AuthModal({ initialTab = 'signin', onClose }) {
   const { signIn, signUp, signInWithGoogle } = useAuth();
   const [tab, setTab] = useState(initialTab);
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -12,6 +13,7 @@ export default function AuthModal({ initialTab = 'signin', onClose }) {
 
   // Reset form when tab changes
   useEffect(() => {
+    setName('');
     setEmail('');
     setPassword('');
     setConfirmPassword('');
@@ -60,7 +62,7 @@ export default function AuthModal({ initialTab = 'signin', onClose }) {
     setStatus('loading');
     const { error } = tab === 'signin'
       ? await signIn(email, password)
-      : await signUp(email, password);
+      : await signUp(email, password, name.trim());
 
     if (error) {
       setErrorMsg(error.message);
@@ -153,6 +155,12 @@ export default function AuthModal({ initialTab = 'signin', onClose }) {
 
             {/* Email/password form */}
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {tab === 'register' && (
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: 'var(--on-surface)', marginBottom: '0.4rem' }}>Full Name</label>
+                  <input required type="text" value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Jane Smith" style={inputStyle} onFocus={handleFocus} onBlur={handleBlur} />
+                </div>
+              )}
               <div>
                 <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: 'var(--on-surface)', marginBottom: '0.4rem' }}>Email Address</label>
                 <input required type="email" value={email} onChange={e => setEmail(e.target.value)} style={inputStyle} onFocus={handleFocus} onBlur={handleBlur} />
