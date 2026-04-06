@@ -1,4 +1,6 @@
 import React from 'react';
+import amitPhoto from '../assets/amit-shah.png';
+import aryanPhoto from '../assets/aryan-shah.jpg';
 
 export default function About() {
   return (
@@ -50,17 +52,27 @@ export default function About() {
           <h2 className="text-primary font-serif" style={{ fontSize: '3rem', marginBottom: '4rem', textAlign: 'center' }}>Meet Our Team</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '4rem', maxWidth: '64rem', margin: '0 auto' }}>
             <div style={{ textAlign: 'center' }}>
-              <div style={{ height: '250px', width: '250px', margin: '0 auto', backgroundColor: 'var(--surface-container-highest)', marginBottom: '2rem', borderRadius: '50%', border: '4px solid var(--surface-container-low)' }}></div>
+              <div style={{ height: '250px', width: '250px', margin: '0 auto', marginBottom: '2rem', borderRadius: '50%', border: '4px solid var(--surface-container-low)', overflow: 'hidden' }}>
+                <img src={amitPhoto} alt="Amit Shah" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }} />
+              </div>
               <h3 className="text-primary font-serif" style={{ fontSize: '1.75rem', marginBottom: '0.5rem' }}>Amit Shah, Principal</h3>
               <p className="font-label" style={{ fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--primary)', marginBottom: '1rem' }}>Tax and Business Advisor</p>
               <p className="text-on-surface-variant" style={{ lineHeight: 1.6 }}>Amit has been in the profession for more than 15 years and loves working directly with small business owners to help them save money on taxes and understand their financial position.</p>
             </div>
             <div style={{ textAlign: 'center' }}>
               <div style={{ height: '250px', width: '250px', margin: '0 auto', backgroundColor: 'var(--surface-container-highest)', marginBottom: '2rem', borderRadius: '50%', border: '4px solid var(--surface-container-low)' }}></div>
-              <h3 className="text-primary font-serif" style={{ fontSize: '1.75rem', marginBottom: '0.5rem' }}>Aryan Shah</h3>
-              <p className="font-label" style={{ fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--primary)', marginBottom: '1rem' }}>Admin and Accounts Assistant</p>
-              <p className="text-on-surface-variant" style={{ lineHeight: 1.6 }}>Aryan is a young, passionate, and diligent professional who efficiently handles admin and bookkeeping tasks.</p>
+              <h3 className="text-primary font-serif" style={{ fontSize: '1.75rem', marginBottom: '0.5rem' }}>Rakesh (a.k.a Zubin) Kothari</h3>
+              <p className="font-label" style={{ fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--primary)', marginBottom: '1rem' }}>Accountant</p>
+              <p className="text-on-surface-variant" style={{ lineHeight: 1.6 }}>Zubin assists with financial reporting, tax returns, and general accounting matters. He focuses on accuracy and making the process straightforward for clients.</p>
             </div>
+          </div>
+          <div style={{ maxWidth: '320px', margin: '4rem auto 0', textAlign: 'center' }}>
+            <div style={{ height: '250px', width: '250px', margin: '0 auto', marginBottom: '2rem', borderRadius: '50%', border: '4px solid var(--surface-container-low)', overflow: 'hidden' }}>
+              <img src={aryanPhoto} alt="Aryan Shah" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 50%' }} />
+            </div>
+            <h3 className="text-primary font-serif" style={{ fontSize: '1.75rem', marginBottom: '0.5rem' }}>Aryan Shah</h3>
+            <p className="font-label" style={{ fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--primary)', marginBottom: '1rem' }}>Admin and Accounts Assistant</p>
+            <p className="text-on-surface-variant" style={{ lineHeight: 1.6 }}>Aryan is a young, passionate, and diligent professional who efficiently handles admin and bookkeeping tasks.</p>
           </div>
         </div>
       </section>
