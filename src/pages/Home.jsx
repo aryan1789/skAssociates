@@ -117,32 +117,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section className="bg-surface" style={{ padding: '8rem 0' }}>
-        <div className="container">
-          <div className="fly-in" style={{ textAlign: 'center', marginBottom: '4rem' }}>
-            <span style={{ fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '0.2em', color: 'var(--on-primary-container)', fontWeight: 600, marginBottom: '1rem', display: 'block' }}>Client Stories</span>
-            <h2 className="text-primary font-serif" style={{ fontSize: '3rem' }}>Hear From Our Clients</h2>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
-            {[
-              { quote: "SK & Associates completely transformed our business accounting. I finally understand my cash flow and the team is an absolute joy to work with.", author: "Sarah Jenkins", role: "Local Bakery Owner" },
-              { quote: "They've taken all the stress out of tax season for our family. So grateful for their transparent communication, lack of jargon, and lightning-fast turnarounds.", author: "Michael T.", role: "Freelance Designer" },
-              { quote: "The team here is incredibly knowledgeable and friendly. They actually took the time to sit down and answer my questions without charging me for every minute.", author: "Elena Rodriguez", role: "Coffee Shop Operator" }
-            ].map((testimonial, i) => (
-              <div key={i} className={`fly-in delay-${i + 1} bg-surface-container-lowest`} style={{ padding: '3rem', borderRadius: '0.5rem', boxShadow: '0 10px 25px rgba(0,0,0,0.03)', border: '1px solid var(--surface-variant)', position: 'relative' }}>
-                <span className="material-symbols-outlined text-primary" style={{ fontSize: '3rem', opacity: 0.2, position: 'absolute', top: '1.5rem', right: '1.5rem' }}>format_quote</span>
-                <p className="text-on-surface-variant font-serif" style={{ fontSize: '1.25rem', lineHeight: 1.6, fontStyle: 'italic', marginBottom: '2rem', position: 'relative', zIndex: 1 }}>"{testimonial.quote}"</p>
-                <div>
-                  <p className="text-primary font-serif" style={{ fontSize: '1.125rem', fontWeight: 600 }}>{testimonial.author}</p>
-                  <p className="font-label text-on-surface-variant" style={{ fontSize: '0.875rem' }}>{testimonial.role}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Partners Section */}
       <section className="bg-surface-container-low" style={{ padding: '5rem 0' }}>
         <div className="container">

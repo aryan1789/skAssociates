@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
 import Home from './pages/Home';
 import Services from './pages/Services';
 import About from './pages/About';
@@ -263,6 +264,7 @@ function App() {
           <Footer />
           <ScrollToTopButton />
         </div>
+        <Analytics />
       </Router>
     </AuthProvider>
   );
