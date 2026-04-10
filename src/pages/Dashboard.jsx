@@ -1,71 +1,59 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 
-const DOCUMENTS = [
+const FOLDERS = [
   {
     id: 1,
-    title: 'FY2024 Tax Return Summary',
-    description: 'Your completed income tax return for the financial year ending 31 March 2024.',
-    icon: 'description',
-    size: '1.2 MB',
-    type: 'PDF',
-    date: '12 May 2024',
+    name: 'Payroll Related Forms',
+    icon: 'payments',
+    updated: '11 Apr 2026',
+    files: [
+      { id: 1, name: 'Kiwisaver Deduction-KS2.pdf', size: 'PDF', type: 'PDF', date: '11 Apr 2026', url: '/documents/payroll/Kiwisaver Deduction-KS2.pdf' },
+      { id: 2, name: 'Tax Declaration- IR330.pdf', size: 'PDF', type: 'PDF', date: '11 Apr 2026', url: '/documents/payroll/Tax Declaration- IR330.pdf' },
+      { id: 3, name: 'Kiwisaver Opt-out form-KS10.pdf', size: 'PDF', type: 'PDF', date: '11 Apr 2026', url: '/documents/payroll/Kiwisaver Opt-out form-KS10.pdf' },
+    ],
   },
   {
     id: 2,
-    title: 'GST Return – Q3 2024',
-    description: 'Goods and Services Tax return for the period July – September 2024.',
+    name: 'Useful Depreciation Claiming Guide',
     icon: 'receipt_long',
-    size: '340 KB',
-    type: 'PDF',
-    date: '28 Oct 2024',
+    updated: '11 Apr 2026',
+    files: [
+      { id: 1, name: 'Application for a higher maximum pooling value- IR719.pdf', size: 'PDF', type: 'PDF', date: '11 Apr 2026', url: '/documents/depreciation/Application for a higher maximum pooling value- IR719.pdf' },
+      { id: 2, name: 'Application for a Special Depreciation rate-IR260B.pdf', size: 'PDF', type: 'PDF', date: '11 Apr 2026', url: '/documents/depreciation/Application for a Special Depreciation rate-IR260B.pdf' },
+      { id: 3, name: 'Application for a Provisional Depreciation rate IR260A 2023.pdf', size: 'PDF', type: 'PDF', date: '11 Apr 2026', url: '/documents/depreciation/Application for a Provisional Depreciation rate IR260A 2023.pdf' },
+    ],
   },
   {
     id: 3,
-    title: 'Financial Statements FY2024',
-    description: 'Profit & loss statement and balance sheet prepared for your business.',
+    name: 'Other Useful Stuff ',
     icon: 'bar_chart',
-    size: '2.1 MB',
-    type: 'PDF',
-    date: '15 Jun 2024',
-  },
-  {
-    id: 4,
-    title: 'Payroll Summary – March 2025',
-    description: 'Employer payroll deductions and PAYE reconciliation for March 2025.',
-    icon: 'payments',
-    size: '480 KB',
-    type: 'XLSX',
-    date: '5 Apr 2025',
-  },
-  {
-    id: 5,
-    title: 'IRD Correspondence – Apr 2025',
-    description: 'Letter from Inland Revenue regarding your provisional tax obligation.',
-    icon: 'mail',
-    size: '210 KB',
-    type: 'PDF',
-    date: '18 Apr 2025',
-  },
-  {
-    id: 6,
-    title: 'Engagement Letter 2025',
-    description: 'Signed engagement letter outlining the scope of services for this tax year.',
-    icon: 'handshake',
-    size: '155 KB',
-    type: 'PDF',
-    date: '3 Feb 2025',
+    updated: '11 Apr 2026',
+    files: [
+      { id: 1, name: 'Prescribed Investor rate(PIR) IR861.pdf', size: 'PDF', type: 'PDF', date: '11 Apr 2026', url: '/documents/other/Prescribed Investor rate(PIR) IR861.pdf' },
+      { id: 2, name: 'Fringe Benefit Tax Guide-IR409.pdf', size: 'PDF', type: 'PDF', date: '11 Apr 2026', url: '/documents/other/Fringe Benefit Tax Guide-IR409.pdf' },
+      { id: 3, name: 'SK- Associates Vehicle-Log-Book-Template.xlsx', size: 'XLSX', type: 'XLSX', date: '11 Apr 2026', url: '/documents/other/SK- Associates Vehicle-Log-Book-Template.xlsx' },
+    ],
   },
 ];
 
+const TYPE_ICON = {
+  PDF: 'picture_as_pdf',
+  XLSX: 'table_chart',
+  DOCX: 'article',
+};
+
 export default function Dashboard() {
   const { user } = useAuth();
+  const [openFolderId, setOpenFolderId] = useState(null);
 
   const displayName =
     user?.user_metadata?.full_name ||
     user?.user_metadata?.name ||
     user?.email?.split('@')[0] ||
     'Client';
+
+  const folder = FOLDERS.find((f) => f.id === openFolderId);
 
   return (
     <>
@@ -113,111 +101,199 @@ export default function Dashboard() {
       {/* Documents */}
       <section className="bg-surface-container-low" style={{ padding: '5rem 0' }}>
         <div className="container" style={{ maxWidth: '64rem' }}>
-          <h2
-            className="text-primary font-serif"
-            style={{ fontSize: '2rem', marginBottom: '2.5rem' }}
-          >
-            Your Documents
-          </h2>
 
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-              gap: '1.5rem',
-            }}
-          >
-            {DOCUMENTS.map((doc) => (
-              <div
-                key={doc.id}
-                className="bg-surface-container-lowest"
+          {/* Breadcrumb */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '2.5rem' }}>
+            <button
+              onClick={() => setOpenFolderId(null)}
+              style={{
+                background: 'none',
+                border: 'none',
+                padding: 0,
+                cursor: openFolderId ? 'pointer' : 'default',
+                fontFamily: 'inherit',
+              }}
+            >
+              <h2
+                className="font-serif"
                 style={{
-                  borderRadius: '0.75rem',
-                  padding: '1.75rem',
-                  boxShadow: '0 2px 12px rgba(0,0,0,0.05)',
-                  border: '1px solid var(--outline-variant)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '1rem',
-                  transition: 'box-shadow 0.2s, transform 0.2s',
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.10)';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.05)';
-                  e.currentTarget.style.transform = 'none';
+                  fontSize: '2rem',
+                  color: openFolderId ? 'var(--primary)' : 'var(--on-surface)',
+                  textDecoration: openFolderId ? 'underline' : 'none',
+                  textUnderlineOffset: '3px',
+                  margin: 0,
                 }}
               >
-                {/* Icon + badge */}
-                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                Knowledge Base
+              </h2>
+            </button>
+            {folder && (
+              <>
+                <span
+                  className="material-symbols-outlined"
+                  style={{ fontSize: '1.25rem', color: 'var(--on-surface-variant)' }}
+                >
+                  chevron_right
+                </span>
+                <h2
+                  className="font-serif"
+                  style={{ fontSize: '2rem', color: 'var(--on-surface)', margin: 0 }}
+                >
+                  {folder.name}
+                </h2>
+              </>
+            )}
+          </div>
+
+          {/* Folder grid */}
+          {!openFolderId && (
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+                gap: '1.5rem',
+              }}
+            >
+              {FOLDERS.map((f) => (
+                <button
+                  key={f.id}
+                  onClick={() => setOpenFolderId(f.id)}
+                  className="bg-surface-container-lowest"
+                  style={{
+                    borderRadius: '0.75rem',
+                    padding: '1.75rem',
+                    boxShadow: '0 2px 12px rgba(0,0,0,0.05)',
+                    border: '1px solid var(--outline-variant)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '1.25rem',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    transition: 'box-shadow 0.2s, transform 0.2s',
+                    background: 'var(--surface-container-lowest)',
+                    fontFamily: 'inherit',
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.10)';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.05)';
+                    e.currentTarget.style.transform = 'none';
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div
+                      style={{
+                        width: '3.25rem',
+                        height: '3.25rem',
+                        borderRadius: '0.5rem',
+                        backgroundColor: 'var(--primary-container)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <span
+                        className="material-symbols-outlined text-primary"
+                        style={{ fontSize: '1.75rem' }}
+                      >
+                        folder
+                      </span>
+                    </div>
+                    <span
+                      className="material-symbols-outlined"
+                      style={{ fontSize: '1.25rem', color: 'var(--on-surface-variant)', opacity: 0.4 }}
+                    >
+                      arrow_forward_ios
+                    </span>
+                  </div>
+                  <div>
+                    <p
+                      className="text-primary font-serif"
+                      style={{ fontSize: '1.0625rem', fontWeight: 600, marginBottom: '0.25rem' }}
+                    >
+                      {f.name}
+                    </p>
+                    <p style={{ fontSize: '0.8125rem', color: 'var(--on-surface-variant)' }}>
+                      {f.files.length} file{f.files.length !== 1 ? 's' : ''} · Updated {f.updated}
+                    </p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* File list inside folder */}
+          {folder && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {folder.files.map((file) => (
+                <div
+                  key={file.id}
+                  className="bg-surface-container-lowest"
+                  style={{
+                    borderRadius: '0.75rem',
+                    padding: '1.25rem 1.5rem',
+                    border: '1px solid var(--outline-variant)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '1rem',
+                    boxShadow: '0 1px 6px rgba(0,0,0,0.04)',
+                    transition: 'box-shadow 0.2s',
+                  }}
+                  onMouseOver={(e) => (e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.08)')}
+                  onMouseOut={(e) => (e.currentTarget.style.boxShadow = '0 1px 6px rgba(0,0,0,0.04)')}
+                >
+                  {/* File type icon */}
                   <div
                     style={{
-                      width: '3rem',
-                      height: '3rem',
+                      width: '2.75rem',
+                      height: '2.75rem',
                       borderRadius: '0.5rem',
                       backgroundColor: 'var(--primary-container)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
+                      flexShrink: 0,
                     }}
                   >
                     <span
                       className="material-symbols-outlined text-primary"
-                      style={{ fontSize: '1.5rem' }}
+                      style={{ fontSize: '1.375rem' }}
                     >
-                      {doc.icon}
+                      {TYPE_ICON[file.type] || 'insert_drive_file'}
                     </span>
                   </div>
-                  <span
-                    style={{
-                      fontSize: '0.6875rem',
-                      fontWeight: 700,
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.08em',
-                      color: 'var(--primary)',
-                      backgroundColor: 'var(--secondary-container)',
-                      padding: '0.25rem 0.6rem',
-                      borderRadius: '999px',
-                    }}
-                  >
-                    {doc.type}
-                  </span>
-                </div>
 
-                {/* Text */}
-                <div style={{ flex: 1 }}>
-                  <h3
-                    className="text-primary font-serif"
-                    style={{ fontSize: '1.0625rem', marginBottom: '0.4rem', lineHeight: 1.3 }}
-                  >
-                    {doc.title}
-                  </h3>
-                  <p
-                    className="text-on-surface-variant"
-                    style={{ fontSize: '0.875rem', lineHeight: 1.5 }}
-                  >
-                    {doc.description}
-                  </p>
-                </div>
+                  {/* Name + meta */}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p
+                      className="text-on-surface"
+                      style={{
+                        fontSize: '0.9375rem',
+                        fontWeight: 500,
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}
+                    >
+                      {file.name}
+                    </p>
+                    <p
+                      style={{
+                        fontSize: '0.8rem',
+                        color: 'var(--on-surface-variant)',
+                        marginTop: '0.15rem',
+                      }}
+                    >
+                      {file.type} · {file.size} · {file.date}
+                    </p>
+                  </div>
 
-                {/* Meta + download */}
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    paddingTop: '0.75rem',
-                    borderTop: '1px solid var(--outline-variant)',
-                  }}
-                >
-                  <span
-                    style={{ fontSize: '0.75rem', color: 'var(--on-surface-variant)' }}
-                  >
-                    {doc.date} · {doc.size}
-                  </span>
-                  <button
+                  {/* Download */}
+                  <a
+                    href={file.url}
+                    download={file.name}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
@@ -225,26 +301,50 @@ export default function Dashboard() {
                       fontSize: '0.875rem',
                       fontWeight: 600,
                       color: 'var(--primary)',
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      padding: '0.25rem 0',
+                      textDecoration: 'none',
+                      flexShrink: 0,
+                      padding: '0.5rem 0.75rem',
+                      borderRadius: '0.5rem',
+                      transition: 'background 0.15s',
                     }}
-                    onMouseOver={(e) => (e.currentTarget.style.opacity = '0.7')}
-                    onMouseOut={(e) => (e.currentTarget.style.opacity = '1')}
+                    onMouseOver={(e) => (e.currentTarget.style.background = 'var(--primary-container)')}
+                    onMouseOut={(e) => (e.currentTarget.style.background = 'transparent')}
                   >
-                    <span
-                      className="material-symbols-outlined"
-                      style={{ fontSize: '1.1rem' }}
-                    >
-                      download
-                    </span>
+                    <span className="material-symbols-outlined" style={{ fontSize: '1.1rem' }}>download</span>
                     Download
-                  </button>
+                  </a>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+
+              {/* Back button */}
+              <button
+                onClick={() => setOpenFolderId(null)}
+                style={{
+                  marginTop: '1rem',
+                  alignSelf: 'flex-start',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  fontSize: '0.9rem',
+                  fontWeight: 500,
+                  color: 'var(--on-surface-variant)',
+                  background: 'none',
+                  border: '1px solid var(--outline-variant)',
+                  borderRadius: '0.5rem',
+                  padding: '0.5rem 1rem',
+                  cursor: 'pointer',
+                  fontFamily: 'inherit',
+                  transition: 'background 0.15s',
+                }}
+                onMouseOver={(e) => (e.currentTarget.style.background = 'var(--surface-variant)')}
+                onMouseOut={(e) => (e.currentTarget.style.background = 'none')}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: '1.1rem' }}>arrow_back</span>
+                Back to folders
+              </button>
+            </div>
+          )}
+
         </div>
       </section>
     </>

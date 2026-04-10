@@ -25,8 +25,8 @@ export default function Pricing() {
     },
     {
       title: "Yearly Tax Returns",
-      price: "400",
-      features: ["Rental Property Return $400 plus GST up to 2 taxpayers", "$220 - $250 plus GST Rideshare Drivers/ Food Delivery Service", "Email & Phone support"]
+      price: "450",
+      features: ["Rental Property Return $450 plus GST up to 2 taxpayers", "$300 - $350 plus GST Rideshare Drivers/ Food Delivery Service", "Email & Phone support"]
     }
   ];
 
