@@ -92,8 +92,9 @@ export default function Contact() {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               {[
-                { icon: 'phone', label: 'Phone', value: '(+64) 27-215-2408', href: 'tel:+6427215248' },
-                { icon: 'mail', label: 'Email', value: 'info@skassociates.co.nz', href: 'mailto:admin@skassociates.com' },
+                { icon: 'phone', label: 'Phone', value: '027-SK-TAXES', href: 'tel:+64277582937' },
+                { icon: 'phone', label: 'Phone', value: '027-215-2408', href: 'tel:+64272152408' },
+                { icon: 'mail', label: 'Email', value: 'info@skassociates.co.nz', href: 'mailto:info@skassociates.co.nz' },
                 { icon: 'markunread_mailbox', label: 'Postal Address', value: 'PO Box 48009, Blockhouse Bay, Auckland, 0644', href: null },
               ].map(({ icon, label, value, href }) => {
                 const sharedStyle = { display: 'flex', alignItems: 'center', gap: '1.25rem', padding: '1.5rem', borderRadius: '0.75rem', border: '1px solid var(--surface-variant)', backgroundColor: 'var(--surface-container-lowest)', textDecoration: 'none', transition: 'border-color 0.2s, box-shadow 0.2s' };
