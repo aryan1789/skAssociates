@@ -7,6 +7,7 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import Pricing from './pages/Pricing';
 import Dashboard from './pages/Dashboard';
+import Admin from './pages/Admin';
 import logo from './assets/logo.png';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import AuthModal from './components/AuthModal';
@@ -47,6 +48,7 @@ function Header() {
       user.user_metadata?.name ||
       user.email;
     const initials = displayName.trim()[0].toUpperCase();
+    const isAdmin = user.email === import.meta.env.VITE_ADMIN_EMAIL;
 
     return (
       <header className="header" style={{ position: 'sticky', top: 0, zIndex: 50 }}>
@@ -55,6 +57,15 @@ function Header() {
             <img src={logo} alt="SK & Associates" style={{ height: '3rem' }} />
           </Link>
           <div className="nav-actions" style={{ alignItems: 'center' }}>
+            {isAdmin && (
+              <Link
+                to="/admin"
+                className={`nav-link ${path === '/admin' ? 'active' : ''}`}
+                style={{ fontSize: '0.9rem' }}
+              >
+                Admin
+              </Link>
+            )}
             {avatarUrl ? (
               <img
                 src={avatarUrl}
@@ -246,6 +257,7 @@ function AnimatedRoutes() {
         <Route path="/consultation" element={<Consultation />} />
         <Route path="/faq" element={<FAQ />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/admin" element={<Admin />} />
       </Routes>
     </div>
   );

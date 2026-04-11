@@ -1,51 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-
-const FOLDERS = [
-  {
-    id: 1,
-    name: 'Payroll Related Forms',
-    icon: 'payments',
-    updated: '11 Apr 2026',
-    files: [
-      { id: 1, name: 'Kiwisaver Deduction-KS2.pdf', size: 'PDF', type: 'PDF', date: '11 Apr 2026', url: '/documents/payroll/Kiwisaver Deduction-KS2.pdf' },
-      { id: 2, name: 'Tax Declaration- IR330.pdf', size: 'PDF', type: 'PDF', date: '11 Apr 2026', url: '/documents/payroll/Tax Declaration- IR330.pdf' },
-      { id: 3, name: 'Kiwisaver Opt-out form-KS10.pdf', size: 'PDF', type: 'PDF', date: '11 Apr 2026', url: '/documents/payroll/Kiwisaver Opt-out form-KS10.pdf' },
-    ],
-  },
-  {
-    id: 2,
-    name: 'Useful Depreciation Claiming Guide',
-    icon: 'receipt_long',
-    updated: '11 Apr 2026',
-    files: [
-      { id: 1, name: 'Application for a higher maximum pooling value- IR719.pdf', size: 'PDF', type: 'PDF', date: '11 Apr 2026', url: '/documents/depreciation/Application for a higher maximum pooling value- IR719.pdf' },
-      { id: 2, name: 'Application for a Special Depreciation rate-IR260B.pdf', size: 'PDF', type: 'PDF', date: '11 Apr 2026', url: '/documents/depreciation/Application for a Special Depreciation rate-IR260B.pdf' },
-      { id: 3, name: 'Application for a Provisional Depreciation rate IR260A 2023.pdf', size: 'PDF', type: 'PDF', date: '11 Apr 2026', url: '/documents/depreciation/Application for a Provisional Depreciation rate IR260A 2023.pdf' },
-    ],
-  },
-  {
-    id: 3,
-    name: 'Other Useful Stuff ',
-    icon: 'bar_chart',
-    updated: '11 Apr 2026',
-    files: [
-      { id: 1, name: 'Prescribed Investor rate(PIR) IR861.pdf', size: 'PDF', type: 'PDF', date: '11 Apr 2026', url: '/documents/other/Prescribed Investor rate(PIR) IR861.pdf' },
-      { id: 2, name: 'Fringe Benefit Tax Guide-IR409.pdf', size: 'PDF', type: 'PDF', date: '11 Apr 2026', url: '/documents/other/Fringe Benefit Tax Guide-IR409.pdf' },
-      { id: 3, name: 'SK- Associates Vehicle-Log-Book-Template.xlsx', size: 'XLSX', type: 'XLSX', date: '11 Apr 2026', url: '/documents/other/SK- Associates Vehicle-Log-Book-Template.xlsx' },
-    ],
-  },
-];
+import { supabase } from '../supabaseClient';
 
 const TYPE_ICON = {
   PDF: 'picture_as_pdf',
   XLSX: 'table_chart',
+  XLS: 'table_chart',
   DOCX: 'article',
+  DOC: 'article',
 };
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const [folders, setFolders] = useState([]);
   const [openFolderId, setOpenFolderId] = useState(null);
+  const [files, setFiles] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [filesLoading, setFilesLoading] = useState(false);
 
   const displayName =
     user?.user_metadata?.full_name ||
@@ -53,7 +24,32 @@ export default function Dashboard() {
     user?.email?.split('@')[0] ||
     'Client';
 
-  const folder = FOLDERS.find((f) => f.id === openFolderId);
+  useEffect(() => {
+    async function fetchFolders() {
+      setLoading(true);
+      const { data } = await supabase.from('portal_folders').select('*').order('position');
+      setFolders(data || []);
+      setLoading(false);
+    }
+    fetchFolders();
+  }, []);
+
+  useEffect(() => {
+    if (!openFolderId) { setFiles([]); return; }
+    async function fetchFiles() {
+      setFilesLoading(true);
+      const { data } = await supabase
+        .from('portal_files')
+        .select('*')
+        .eq('folder_id', openFolderId)
+        .order('created_at');
+      setFiles(data || []);
+      setFilesLoading(false);
+    }
+    fetchFiles();
+  }, [openFolderId]);
+
+  const folder = folders.find((f) => f.id === openFolderId);
 
   return (
     <>
@@ -145,89 +141,116 @@ export default function Dashboard() {
             )}
           </div>
 
-          {/* Folder grid */}
-          {!openFolderId && (
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
-                gap: '1.5rem',
-              }}
-            >
-              {FOLDERS.map((f) => (
-                <button
-                  key={f.id}
-                  onClick={() => setOpenFolderId(f.id)}
-                  className="bg-surface-container-lowest"
-                  style={{
-                    borderRadius: '0.75rem',
-                    padding: '1.75rem',
-                    boxShadow: '0 2px 12px rgba(0,0,0,0.05)',
-                    border: '1px solid var(--outline-variant)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '1.25rem',
-                    cursor: 'pointer',
-                    textAlign: 'left',
-                    transition: 'box-shadow 0.2s, transform 0.2s',
-                    background: 'var(--surface-container-lowest)',
-                    fontFamily: 'inherit',
-                  }}
-                  onMouseOver={(e) => {
-                    e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.10)';
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                  }}
-                  onMouseOut={(e) => {
-                    e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.05)';
-                    e.currentTarget.style.transform = 'none';
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <div
-                      style={{
-                        width: '3.25rem',
-                        height: '3.25rem',
-                        borderRadius: '0.5rem',
-                        backgroundColor: 'var(--primary-container)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <span
-                        className="material-symbols-outlined text-primary"
-                        style={{ fontSize: '1.75rem' }}
-                      >
-                        folder
-                      </span>
-                    </div>
-                    <span
-                      className="material-symbols-outlined"
-                      style={{ fontSize: '1.25rem', color: 'var(--on-surface-variant)', opacity: 0.4 }}
-                    >
-                      arrow_forward_ios
-                    </span>
-                  </div>
-                  <div>
-                    <p
-                      className="text-primary font-serif"
-                      style={{ fontSize: '1.0625rem', fontWeight: 600, marginBottom: '0.25rem' }}
-                    >
-                      {f.name}
-                    </p>
-                    <p style={{ fontSize: '0.8125rem', color: 'var(--on-surface-variant)' }}>
-                      {f.files.length} file{f.files.length !== 1 ? 's' : ''} · Updated {f.updated}
-                    </p>
-                  </div>
-                </button>
-              ))}
+          {/* Loading state */}
+          {loading && (
+            <div style={{ padding: '4rem 0', textAlign: 'center' }}>
+              <span
+                className="material-symbols-outlined"
+                style={{ fontSize: '2rem', color: 'var(--on-surface-variant)', display: 'block' }}
+              >
+                progress_activity
+              </span>
             </div>
           )}
 
+          {/* Folder grid */}
+          {!loading && !openFolderId && (
+            <>
+              {folders.length === 0 ? (
+                <p style={{ color: 'var(--on-surface-variant)' }}>No documents available yet.</p>
+              ) : (
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+                    gap: '1.5rem',
+                  }}
+                >
+                  {folders.map((f) => (
+                    <button
+                      key={f.id}
+                      onClick={() => setOpenFolderId(f.id)}
+                      className="bg-surface-container-lowest"
+                      style={{
+                        borderRadius: '0.75rem',
+                        padding: '1.75rem',
+                        boxShadow: '0 2px 12px rgba(0,0,0,0.05)',
+                        border: '1px solid var(--outline-variant)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '1.25rem',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        transition: 'box-shadow 0.2s, transform 0.2s',
+                        background: 'var(--surface-container-lowest)',
+                        fontFamily: 'inherit',
+                      }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.10)';
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.05)';
+                        e.currentTarget.style.transform = 'none';
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div
+                          style={{
+                            width: '3.25rem',
+                            height: '3.25rem',
+                            borderRadius: '0.5rem',
+                            backgroundColor: 'var(--primary-container)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          <span className="material-symbols-outlined text-primary" style={{ fontSize: '1.75rem' }}>
+                            folder
+                          </span>
+                        </div>
+                        <span
+                          className="material-symbols-outlined"
+                          style={{ fontSize: '1.25rem', color: 'var(--on-surface-variant)', opacity: 0.4 }}
+                        >
+                          arrow_forward_ios
+                        </span>
+                      </div>
+                      <div>
+                        <p
+                          className="text-primary font-serif"
+                          style={{ fontSize: '1.0625rem', fontWeight: 600, marginBottom: '0.25rem' }}
+                        >
+                          {f.name}
+                        </p>
+                        <p style={{ fontSize: '0.8125rem', color: 'var(--on-surface-variant)' }}>
+                          {f.file_count ?? 'Open'} {f.file_count != null ? `file${f.file_count !== 1 ? 's' : ''}` : 'to view files'}
+                        </p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+
           {/* File list inside folder */}
-          {folder && (
+          {!loading && folder && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {folder.files.map((file) => (
+              {filesLoading && (
+                <div style={{ padding: '2rem 0', textAlign: 'center' }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: '1.5rem', color: 'var(--on-surface-variant)' }}>
+                    progress_activity
+                  </span>
+                </div>
+              )}
+
+              {!filesLoading && files.length === 0 && (
+                <p style={{ color: 'var(--on-surface-variant)', fontSize: '0.9rem' }}>No files in this folder yet.</p>
+              )}
+
+              {!filesLoading && files.map((file) => (
                 <div
                   key={file.id}
                   className="bg-surface-container-lowest"
@@ -257,10 +280,7 @@ export default function Dashboard() {
                       flexShrink: 0,
                     }}
                   >
-                    <span
-                      className="material-symbols-outlined text-primary"
-                      style={{ fontSize: '1.375rem' }}
-                    >
+                    <span className="material-symbols-outlined text-primary" style={{ fontSize: '1.375rem' }}>
                       {TYPE_ICON[file.type] || 'insert_drive_file'}
                     </span>
                   </div>
@@ -279,14 +299,8 @@ export default function Dashboard() {
                     >
                       {file.name}
                     </p>
-                    <p
-                      style={{
-                        fontSize: '0.8rem',
-                        color: 'var(--on-surface-variant)',
-                        marginTop: '0.15rem',
-                      }}
-                    >
-                      {file.type} · {file.size} · {file.date}
+                    <p style={{ fontSize: '0.8rem', color: 'var(--on-surface-variant)', marginTop: '0.15rem' }}>
+                      {file.type} · {new Date(file.created_at).toLocaleDateString('en-NZ', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </p>
                   </div>
 
@@ -294,6 +308,8 @@ export default function Dashboard() {
                   <a
                     href={file.url}
                     download={file.name}
+                    target="_blank"
+                    rel="noreferrer"
                     style={{
                       display: 'flex',
                       alignItems: 'center',
