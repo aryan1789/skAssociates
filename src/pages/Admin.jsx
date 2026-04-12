@@ -21,6 +21,7 @@ export default function Admin() {
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState(null);
   const [showNewFolder, setShowNewFolder] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
   const [newFolderIcon, setNewFolderIcon] = useState('folder');
@@ -94,23 +95,27 @@ export default function Admin() {
     const file = e.target.files[0];
     if (!file || !openFolderId) return;
     setUploading(true);
+    setUploadError(null);
     const storagePath = `${openFolderId}/${Date.now()}-${file.name}`;
     const { error } = await supabase.storage
       .from('portal-documents')
       .upload(storagePath, file, { upsert: true });
-    if (!error) {
+    if (error) {
+      setUploadError(error.message);
+    } else {
       const { data: urlData } = supabase.storage
         .from('portal-documents')
         .getPublicUrl(storagePath);
       const ext = file.name.split('.').pop().toUpperCase();
-      await supabase.from('portal_files').insert({
+      const { error: dbError } = await supabase.from('portal_files').insert({
         folder_id: openFolderId,
         name: file.name,
         type: ['PDF', 'XLSX', 'DOCX', 'XLS', 'DOC'].includes(ext) ? ext : 'FILE',
         url: urlData.publicUrl,
         storage_path: storagePath,
       });
-      fetchFiles(openFolderId);
+      if (dbError) setUploadError(dbError.message);
+      else fetchFiles(openFolderId);
     }
     setUploading(false);
     e.target.value = '';
@@ -417,6 +422,12 @@ export default function Admin() {
                 onChange={uploadFile}
                 style={{ display: 'none' }}
               />
+              {uploadError && (
+                <div style={{ marginBottom: '1rem', padding: '0.75rem 1rem', borderRadius: '0.5rem', background: '#fdecea', border: '1px solid #f5c6cb', color: '#b71c1c', fontSize: '0.875rem' }}>
+                  <strong>Upload failed:</strong> {uploadError}
+                </div>
+              )}
+
               <button
                 onClick={() => fileInputRef.current.click()}
                 disabled={uploading}
