@@ -51,6 +51,17 @@ export default function Dashboard() {
 
   const folder = folders.find((f) => f.id === openFolderId);
 
+  async function handleDownload(file) {
+    const res = await fetch(file.url);
+    const blob = await res.blob();
+    const blobUrl = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = file.name;
+    a.click();
+    URL.revokeObjectURL(blobUrl);
+  }
+
   return (
     <>
       {/* Hero */}
@@ -305,11 +316,8 @@ export default function Dashboard() {
                   </div>
 
                   {/* Download */}
-                  <a
-                    href={file.url}
-                    download={file.name}
-                    target="_blank"
-                    rel="noreferrer"
+                  <button
+                    onClick={() => handleDownload(file)}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
@@ -317,10 +325,13 @@ export default function Dashboard() {
                       fontSize: '0.875rem',
                       fontWeight: 600,
                       color: 'var(--primary)',
-                      textDecoration: 'none',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
                       flexShrink: 0,
                       padding: '0.5rem 0.75rem',
                       borderRadius: '0.5rem',
+                      fontFamily: 'inherit',
                       transition: 'background 0.15s',
                     }}
                     onMouseOver={(e) => (e.currentTarget.style.background = 'var(--primary-container)')}
@@ -328,7 +339,7 @@ export default function Dashboard() {
                   >
                     <span className="material-symbols-outlined" style={{ fontSize: '1.1rem' }}>download</span>
                     Download
-                  </a>
+                  </button>
                 </div>
               ))}
 
