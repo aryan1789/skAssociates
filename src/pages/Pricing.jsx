@@ -6,7 +6,7 @@ export default function Pricing() {
     {
       title: "Sole Trader",
       price: "90",
-      features: ["GST Returns", "Annual Income Tax Returns", "Annual Financial Statements", "Payroll support up to 2 employees", "IRD Liaison", "Email & Phone Support"]
+      features: ["GST Returns", "Annual Income Tax Returns", "Annual Financial Statements", "IRD Liaison", "Email & Phone Support"]
     },
     {
       title: "Startup Business",
