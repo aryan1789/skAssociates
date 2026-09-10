@@ -16,12 +16,12 @@ export default function Pricing() {
     {
       title: "Small Business",
       price: "180",
-      features: ["GST Returns", "Annual Income Tax Returns", "Annual Financial Statements", "Payroll support up to 8 employees", "Shareholder Tax Returns", "IRD Liaison", "Email & Phone Support"]
+      features: ["GST Returns", "Annual Income Tax Returns", "Annual Financial Statements", "Payroll support up to 5 employees", "Shareholder Tax Returns", "IRD Liaison", "Email & Phone Support"]
     },
     {
       title: "Growing Business",
       price: "260",
-      features: ["GST Returns", "Annual Income Tax Returns", "Annual Financial Statements", "Payroll support up to 15 employees", "Shareholder Tax Returns", "FBT (Fringe Benefit Tax) Returns", "ACC Levy Reviews", "IRD Liaison", "Email & Phone Support"]
+      features: ["GST Returns", "Annual Income Tax Returns", "Annual Financial Statements", "Payroll support up to 10 employees", "Shareholder Tax Returns", "FBT (Fringe Benefit Tax) Returns", "ACC Levy Reviews", "IRD Liaison", "Email & Phone Support"]
     },
     {
       title: "Yearly Tax Returns",
