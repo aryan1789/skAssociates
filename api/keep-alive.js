@@ -12,10 +12,18 @@ export default async function handler(req, res) {
     return res.status(500).json({ ok: false, error: 'Missing Supabase env vars' });
   }
 
-  // Cheap read against a real table. An empty result (RLS) still counts as activity.
-  const response = await fetch(`${url}/rest/v1/portal_folders?select=id&limit=1`, {
-    headers: { apikey: key, Authorization: `Bearer ${key}` },
-  });
+  // Cheap reads against real tables. An empty result (RLS) still reaches the database.
+  const responses = await Promise.all(
+    ['portal_folders', 'portal_files'].map((table) =>
+      fetch(`${url}/rest/v1/${table}?select=id&limit=1`, {
+        headers: { apikey: key, Authorization: `Bearer ${key}` },
+      })
+    )
+  );
+  const ok = responses.every((response) => response.ok);
+  const statuses = responses.map((response) => response.status);
 
-  return res.status(response.ok ? 200 : 502).json({ ok: response.ok, status: response.status });
+  // Logged so a run shows up in Vercel's runtime logs.
+  console.log('keep-alive', statuses);
+  return res.status(ok ? 200 : 502).json({ ok, statuses });
 }
